@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Vườn Chữ Bé Yêu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky: #FFF4D6;
+    --sky2: #FFE8B0;
+    --leaf: #3AA655;
+    --leaf-dark: #2A7D3E;
+    --soil: #8B5A2B;
+    --coral: #FF6F59;
+    --sun: #FFC93C;
+    --sun-dark: #F2A900;
+    --sky-blue: #6EC6E8;
+    --white: #FFFFFF;
+    --ink: #3A3226;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Quicksand', sans-serif;
+    background:
+      radial-gradient(circle at 15% 15%, #FFFDF5 0%, transparent 40%),
+      linear-gradient(180deg, var(--sky-blue) 0%, var(--sky) 42%, var(--sky2) 100%);
+    color:var(--ink);
+    overflow-x:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-bottom:40px;
+  }
+
+  /* Ground */
+  .ground{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    height:70px;
+    background: linear-gradient(180deg, var(--leaf) 0%, var(--leaf-dark) 100%);
+    border-top:8px solid #2A7D3E;
+    z-index:0;
+  }
+  .cloud{
+    position:absolute;
+    background:white;
+    border-radius:50px;
+    opacity:0.85;
+    z-index:0;
+  }
+  .sun-deco{
+    position:fixed;
+    top:20px; right:20px;
+    width:70px; height:70px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #FFE07A, var(--sun-dark));
+    box-shadow: 0 0 30px rgba(255,201,60,0.6);
+    z-index:0;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} }
+
+  header{
+    text-align:center;
+    padding:28px 20px 10px;
+    z-index:1;
+    position:relative;
+  }
+  h1{
+    font-family:'Baloo 2', cursive;
+    font-size:2.1rem;
+    margin:0;
+    color:var(--leaf-dark);
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.6);
+  }
+  .sub{
+    font-size:1rem;
+    color:#6b5d45;
+    margin-top:4px;
+    font-weight:600;
+  }
+
+  main{
+    width:100%;
+    max-width:520px;
+    z-index:1;
+    padding:0 16px;
+    position:relative;
+  }
+
+  /* Stars progress */
+  .stars-row{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    margin:8px 0 18px;
+  }
+  .star{
+    font-size:1.4rem;
+    opacity:0.35;
+    transition: all .3s ease;
+  }
+  .star.filled{
+    opacity:1;
+    transform:scale(1.15);
+    filter: drop-shadow(0 0 4px rgba(255,201,60,0.8));
+  }
+
+  /* Card */
+  .card{
+    background: var(--white);
+    border-radius:28px;
+    padding:28px 20px 24px;
+    box-shadow: 0 12px 0 rgba(0,0,0,0.08), 0 12px 30px rgba(0,0,0,0.12);
+    text-align:center;
+    position:relative;
+    border: 4px solid #fff;
+  }
+
+  .picture{
+    font-size:5.2rem;
+    line-height:1;
+    margin-bottom:6px;
+    filter: drop-shadow(0 6px 6px rgba(0,0,0,0.15));
+    animation: bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+  .listen-btn{
+    background:var(--sky-blue);
+    color:white;
+    border:none;
+    border-radius:50px;
+    padding:8px 18px;
+    font-family:'Quicksand';
+    font-weight:700;
+    font-size:0.95rem;
+    box-shadow:0 4px 0 #4A9FC2;
+    cursor:pointer;
+    margin-bottom:22px;
+    transition: transform .1s ease;
+  }
+  .listen-btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #4A9FC2; }
+
+  /* Answer slots */
+  .slots{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:24px;
+    min-height:64px;
+  }
+  .slot{
+    width:52px; height:60px;
+    border-radius:14px;
+    border:3px dashed #d8cdb0;
+    background:#FFFBF0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Baloo 2';
+    font-size:1.8rem;
+    font-weight:700;
+    color:var(--leaf-dark);
+    transition: all .2s ease;
+  }
+  .slot.filled{
+    border-style:solid;
+    border-color:var(--sun-dark);
+    background: var(--sun);
+    transform: scale(1.05);
+  }
+  .slot.wrong{
+    animation: shake .4s ease;
+    border-color:var(--coral);
+    background:#FFE1DC;
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-6px);}
+    75%{transform:translateX(6px);}
+  }
+
+  /* Letter tiles */
+  .letters{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .tile{
+    width:56px; height:56px;
+    border-radius:16px;
+    background: linear-gradient(180deg, #FFDD70, var(--sun-dark));
+    border:none;
+    font-family:'Baloo 2';
+    font-size:1.6rem;
+    font-weight:700;
+    color:#6b3f00;
+    box-shadow:0 5px 0 #C98600;
+    cursor:pointer;
+    transition: transform .08s ease, box-shadow .08s ease, opacity .2s ease;
+  }
+  .tile:active{ transform:translateY(4px); box-shadow:0 1px 0 #C98600; }
+  .tile.used{ opacity:0; pointer-events:none; transform:scale(0.5); }
+
+  /* Bottom controls */
+  .controls{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-top:22px;
+  }
+  .ctrl-btn{
+    background:var(--coral);
+    color:white;
+    border:none;
+    border-radius:50px;
+    padding:10px 20px;
+    font-family:'Quicksand';
+    font-weight:700;
+    font-size:0.95rem;
+    box-shadow:0 4px 0 #C94F3C;
+    cursor:pointer;
+  }
+  .ctrl-btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #C94F3C; }
+  .ctrl-btn.secondary{
+    background:#B7B3A6;
+    box-shadow:0 4px 0 #8C8879;
+  }
+
+  /* Celebration overlay */
+  .celebrate{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:10;
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(2px);
+  }
+  .celebrate.show{ display:flex; }
+  .celebrate-box{
+    background:white;
+    border-radius:28px;
+    padding:36px 30px;
+    text-align:center;
+    box-shadow:0 20px 40px rgba(0,0,0,0.2);
+    animation: pop .35s ease;
+  }
+  @keyframes pop{
+    0%{ transform:scale(0.6); opacity:0; }
+    100%{ transform:scale(1); opacity:1; }
+  }
+  .celebrate-emoji{ font-size:4rem; }
+  .celebrate-text{
+    font-family:'Baloo 2';
+    font-size:1.5rem;
+    color:var(--leaf-dark);
+    margin:10px 0 18px;
+  }
+
+  .confetti{
+    position:fixed;
+    top:-20px;
+    width:12px; height:12px;
+    z-index:11;
+    animation: fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform: translateY(110vh) rotate(360deg); opacity:0.3; }
+  }
+
+  footer{
+    text-align:center;
+    font-size:0.8rem;
+    color:#7a6d55;
+    margin-top:30px;
+    z-index:1;
+    position:relative;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sun-deco"></div>
+<div class="ground"></div>
+
+<header>
+  <h1>🌻 Vườn Chữ Bé Yêu 🌻</h1>
+  <div class="sub">Ghép chữ cái thành từ thật vui nhé!</div>
+</header>
+
+<main>
+  <div class="stars-row" id="starsRow"></div>
+
+  <div class="card">
+    <div class="picture" id="picture">🐱</div>
+    <button class="listen-btn" id="listenBtn">🔊 Nghe từ này</button>
+
+    <div class="slots" id="slots"></div>
+    <div class="letters" id="letters"></div>
+
+    <div class="controls">
+      <button class="ctrl-btn secondary" id="resetBtn">↺ Làm lại</button>
+    </div>
+  </div>
+</main>
+
+<footer>Chạm vào chữ cái để ghép từ • Bé làm rất giỏi! 💛</footer>
+
+<div class="celebrate" id="celebrate">
+  <div class="celebrate-box">
+    <div class="celebrate-emoji">🎉</div>
+    <div class="celebrate-text" id="celebrateText">Giỏi quá!</div>
+    <button class="ctrl-btn" id="nextBtn">Từ tiếp theo →</button>
+  </div>
+</div>
+
+<script>
+// ----- Dữ liệu từ vựng: emoji, từ, gợi ý âm -----
+const WORDS = [
+  { word: "CÁ",   emoji: "🐟" },
+  { word: "GÀ",   emoji: "🐔" },
+  { word: "CHÓ",  emoji: "🐶" },
+  { word: "MÈO",  emoji: "🐱" },
+  { word: "HOA",  emoji: "🌸" },
+  { word: "XE",   emoji: "🚗" },
+  { word: "NHÀ",  emoji: "🏠" },
+  { word: "BÓNG", emoji: "⚽" },
+  { word: "SAO",  emoji: "⭐" },
+  { word: "ONG",  emoji: "🐝" },
+  { word: "CUA",  emoji: "🦀" },
+  { word: "VOI",  emoji: "🐘" },
+];
+
+let order = shuffle([...Array(WORDS.length).keys()]);
+let currentIndex = 0;
+let currentWord = "";
+let answer = [];      // chữ cái đã đặt vào slot, theo thứ tự
+let tilesState = [];  // trạng thái từng nút chữ cái (đã dùng hay chưa)
+let starsEarned = 0;
+
+const slotsEl = document.getElementById('slots');
+const lettersEl = document.getElementById('letters');
+const pictureEl = document.getElementById('picture');
+const starsRow = document.getElementById('starsRow');
+const celebrateEl = document.getElementById('celebrate');
+const celebrateText = document.getElementById('celebrateText');
+
+function shuffle(arr){
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'vi-VN';
+  u.rate = 0.85;
+  u.pitch = 1.05;
+  const voices = window.speechSynthesis.getVoices();
+  const viVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('vi'));
+  if(viVoice) u.voice = viVoice;
+  window.speechSynthesis.speak(u);
+}
+
+function playChime(success){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = success ? [523.25, 659.25, 783.99] : [300, 220];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.15, ctx.currentTime + i*0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.12 + 0.3);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + i*0.12);
+      osc.stop(ctx.currentTime + i*0.12 + 0.3);
+    });
+  }catch(e){ /* audio not available, ignore */ }
+}
+
+function renderStars(){
+  starsRow.innerHTML = '';
+  for(let i = 0; i < WORDS.length; i++){
+    const s = document.createElement('span');
+    s.className = 'star' + (i < starsEarned ? ' filled' : '');
+    s.textContent = '⭐';
+    starsRow.appendChild(s);
+  }
+}
+
+function loadWord(){
+  const data = WORDS[order[currentIndex]];
+  currentWord = data.word;
+  pictureEl.textContent = data.emoji;
+  answer = new Array(currentWord.length).fill(null);
+
+  // Render slots
+  slotsEl.innerHTML = '';
+  for(let i = 0; i < currentWord.length; i++){
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    slot.dataset.index = i;
+    slotsEl.appendChild(slot);
+  }
+
+  // Build shuffled letter set: correct letters + a couple distractors
+  let letterPool = currentWord.split('');
+  const distractorChoices = "ABEIOUKLMNRST".split('').filter(c => !letterPool.includes(c));
+  shuffle(distractorChoices);
+  const distractorCount = Math.min(2, distractorChoices.length);
+  letterPool = letterPool.concat(distractorChoices.slice(0, distractorCount));
+  letterPool = shuffle(letterPool);
+
+  lettersEl.innerHTML = '';
+  tilesState = letterPool.map((letter, idx) => ({ letter, used: false, id: idx }));
+  tilesState.forEach(tile => {
+    const btn = document.createElement('button');
+    btn.className = 'tile';
+    btn.textContent = tile.letter;
+    btn.dataset.id = tile.id;
+    btn.addEventListener('click', () => onTileClick(tile.id));
+    lettersEl.appendChild(btn);
+  });
+
+  setTimeout(() => speak(currentWord), 400);
+}
+
+function onTileClick(tileId){
+  const tile = tilesState.find(t => t.id === tileId);
+  if(!tile || tile.used) return;
+
+  const nextEmptyIndex = answer.findIndex(a => a === null);
+  if(nextEmptyIndex === -1) return;
+
+  answer[nextEmptyIndex] = tile.letter;
+  tile.used = true;
+
+  const btn = lettersEl.querySelector(`[data-id="${tileId}"]`);
+  btn.classList.add('used');
+
+  const slot = slotsEl.children[nextEmptyIndex];
+  slot.textContent = tile.letter;
+  slot.classList.add('filled');
+
+  // Check if word is complete
+  if(answer.every(a => a !== null)){
+    setTimeout(checkAnswer, 300);
+  }
+}
+
+function checkAnswer(){
+  const built = answer.join('');
+  if(built === currentWord){
+    starsEarned = Math.min(starsEarned + 1, WORDS.length);
+    renderStars();
+    playChime(true);
+    speak("Giỏi quá! " + currentWord);
+    celebrateText.textContent = "Giỏi quá! Con ghép đúng từ " + currentWord;
+    celebrateEl.classList.add('show');
+    launchConfetti();
+  } else {
+    playChime(false);
+    // shake wrong slots and reset
+    Array.from(slotsEl.children).forEach(s => s.classList.add('wrong'));
+    setTimeout(() => {
+      Array.from(slotsEl.children).forEach(s => {
+        s.classList.remove('wrong', 'filled');
+        s.textContent = '';
+      });
+      answer = new Array(currentWord.length).fill(null);
+      tilesState.forEach(t => t.used = false);
+      lettersEl.querySelectorAll('.tile').forEach(b => b.classList.remove('used'));
+    }, 500);
+  }
+}
+
+function launchConfetti(){
+  const colors = ['#FF6F59','#FFC93C','#3AA655','#6EC6E8','#FFFFFF'];
+  for(let i = 0; i < 24; i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
+    c.style.animationDuration = (2 + Math.random()*1.5) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+document.getElementById('listenBtn').addEventListener('click', () => speak(currentWord));
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  Array.from(slotsEl.children).forEach(s => {
+    s.classList.remove('filled', 'wrong');
+    s.textContent = '';
+  });
+  answer = new Array(currentWord.length).fill(null);
+  tilesState.forEach(t => t.used = false);
+  lettersEl.querySelectorAll('.tile').forEach(b => b.classList.remove('used'));
+});
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  celebrateEl.classList.remove('show');
+  currentIndex = (currentIndex + 1) % order.length;
+  if(currentIndex === 0){
+    order = shuffle(order);
+  }
+  loadWord();
+});
+
+// Kick things off
+renderStars();
+loadWord();
+
+// Some browsers load voices asynchronously
+if('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged = () => {};
+}
+</script>
+</body>
+</html>
