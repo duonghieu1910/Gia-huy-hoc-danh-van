@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Vườn Chữ Bé Yêu</title>
+<title>Gia Huy Học Đánh Vần</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -12,11 +12,12 @@
     --sky2: #FFE8B0;
     --leaf: #3AA655;
     --leaf-dark: #2A7D3E;
-    --soil: #8B5A2B;
     --coral: #FF6F59;
     --sun: #FFC93C;
     --sun-dark: #F2A900;
     --sky-blue: #6EC6E8;
+    --purple: #8B7CD8;
+    --purple-dark: #6A5AC4;
     --white: #FFFFFF;
     --ink: #3A3226;
   }
@@ -35,6 +36,472 @@
     align-items:center;
     padding-bottom:40px;
   }
+  .ground{
+    position:fixed; bottom:0; left:0; right:0; height:70px;
+    background: linear-gradient(180deg, var(--leaf) 0%, var(--leaf-dark) 100%);
+    border-top:8px solid #2A7D3E; z-index:0;
+  }
+  .sun-deco{
+    position:fixed; top:20px; right:20px; width:70px; height:70px; border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, #FFE07A, var(--sun-dark));
+    box-shadow: 0 0 30px rgba(255,201,60,0.6); z-index:0;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} }
+
+  header{ text-align:center; padding:24px 20px 6px; z-index:1; position:relative; }
+  h1{
+    font-family:'Baloo 2', cursive; font-size:1.7rem; margin:0;
+    color:var(--leaf-dark); text-shadow: 2px 2px 0 rgba(255,255,255,0.6);
+  }
+  .sub{ font-size:0.95rem; color:#6b5d45; margin-top:4px; font-weight:600; }
+
+  main{ width:100%; max-width:520px; z-index:1; padding:0 16px; position:relative; }
+
+  .stars-row{ display:flex; justify-content:center; gap:5px; margin:8px 0 14px; flex-wrap:wrap; }
+  .star{ font-size:1.2rem; opacity:0.35; transition: all .3s ease; }
+  .star.filled{ opacity:1; transform:scale(1.15); filter: drop-shadow(0 0 4px rgba(255,201,60,0.8)); }
+
+  .steps{ display:flex; justify-content:center; gap:8px; margin-bottom:16px; }
+  .step-pill{
+    padding:7px 16px; border-radius:50px; font-weight:700; font-size:0.85rem;
+    background:#EFE9D8; color:#9a8f74; border:2px solid transparent; cursor:pointer;
+    transition: all .2s ease;
+  }
+  .step-pill.active{
+    background: var(--purple); color:white; border-color:var(--purple-dark);
+    box-shadow:0 3px 0 var(--purple-dark);
+  }
+  .step-pill.done{ background:#CDEBD3; color:var(--leaf-dark); }
+
+  .card{
+    background: var(--white); border-radius:28px; padding:26px 20px 22px;
+    box-shadow: 0 12px 0 rgba(0,0,0,0.08), 0 12px 30px rgba(0,0,0,0.12);
+    text-align:center; position:relative; border: 4px solid #fff;
+  }
+  .picture{
+    font-size:4.6rem; line-height:1; margin-bottom:4px;
+    filter: drop-shadow(0 6px 6px rgba(0,0,0,0.15));
+    animation: bob 2.4s ease-in-out infinite;
+  }
+  @keyframes bob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; }
+
+  .hint{ font-size:0.9rem; color:#8a7e63; margin:2px 0 18px; font-weight:600; }
+
+  .parts-row{
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    margin-bottom:18px; min-height:110px; transition: opacity .3s ease;
+  }
+  .plus-sign{ font-family:'Baloo 2'; font-size:1.8rem; color:#c9bd9c; font-weight:700; }
+  .part-wrap{ display:flex; flex-direction:column; align-items:center; gap:6px; transition: transform .5s ease, opacity .5s ease; }
+  .part-tile{
+    min-width:78px; height:78px; padding:0 10px; border-radius:20px;
+    background: linear-gradient(180deg, #B3A6F2, var(--purple-dark));
+    border:none; color:white; font-family:'Baloo 2'; font-weight:700; font-size:1.7rem;
+    box-shadow:0 5px 0 #4E3FA0; cursor:pointer;
+    transition: transform .08s ease, box-shadow .08s ease;
+  }
+  .part-wrap:nth-child(1) .part-tile{ background: linear-gradient(180deg, #FF9E8A, var(--coral)); box-shadow:0 5px 0 #C94F3C; }
+  .part-tile:active{ transform:translateY(4px); box-shadow:0 1px 0 #4E3FA0; }
+  .part-wrap:nth-child(1) .part-tile:active{ box-shadow:0 1px 0 #C94F3C; }
+  .part-caption{ font-size:0.75rem; color:#9a8f74; font-weight:600; }
+
+  .parts-row.merging .part-wrap:nth-child(1){ transform: translateX(28px); }
+  .parts-row.merging .part-wrap:nth-child(3){ transform: translateX(-28px); }
+  .parts-row.merging{ opacity:0; }
+
+  .merge-result{
+    font-family:'Baloo 2'; font-weight:800; font-size:2.6rem; color:var(--leaf-dark);
+    margin-bottom:18px; display:none; animation: pop .4s ease;
+  }
+  @keyframes pop{ 0%{transform:scale(0.5); opacity:0;} 100%{transform:scale(1); opacity:1;} }
+
+  .big-btn{
+    display:inline-block; border:none; border-radius:50px; padding:12px 22px;
+    font-family:'Quicksand'; font-weight:700; font-size:1rem; cursor:pointer;
+    margin:6px 6px 0; transition: transform .1s ease;
+  }
+  .big-btn:active{ transform:translateY(3px); }
+  .btn-listen{ background:var(--sky-blue); color:white; box-shadow:0 4px 0 #4A9FC2; }
+  .btn-go{ background:var(--leaf); color:white; box-shadow:0 4px 0 var(--leaf-dark); }
+  .btn-go:disabled{ opacity:0.5; }
+
+  .listen-btn{
+    background:var(--sky-blue); color:white; border:none; border-radius:50px;
+    padding:8px 18px; font-family:'Quicksand'; font-weight:700; font-size:0.95rem;
+    box-shadow:0 4px 0 #4A9FC2; cursor:pointer; margin-bottom:20px;
+  }
+  .listen-btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #4A9FC2; }
+
+  .slots{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:22px; min-height:70px; }
+  .slot{
+    min-width:70px; height:70px; padding:0 8px; border-radius:16px;
+    border:3px dashed #d8cdb0; background:#FFFBF0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2'; font-size:1.7rem; font-weight:700; color:var(--leaf-dark);
+    transition: all .2s ease;
+  }
+  .slot.filled{ border-style:solid; border-color:var(--sun-dark); background: var(--sun); transform: scale(1.05); }
+  .slot.wrong{ animation: shake .4s ease; border-color:var(--coral); background:#FFE1DC; }
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+
+  .letters{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+  .tile{
+    min-width:66px; height:60px; padding:0 10px; border-radius:16px;
+    background: linear-gradient(180deg, #FFDD70, var(--sun-dark)); border:none;
+    font-family:'Baloo 2'; font-size:1.5rem; font-weight:700; color:#6b3f00;
+    box-shadow:0 5px 0 #C98600; cursor:pointer;
+    transition: transform .08s ease, box-shadow .08s ease, opacity .2s ease;
+  }
+  .tile:active{ transform:translateY(4px); box-shadow:0 1px 0 #C98600; }
+  .tile.used{ opacity:0; pointer-events:none; transform:scale(0.5); }
+
+  .controls{ display:flex; justify-content:center; gap:14px; margin-top:20px; flex-wrap:wrap; }
+  .ctrl-btn{
+    background:var(--coral); color:white; border:none; border-radius:50px; padding:10px 20px;
+    font-family:'Quicksand'; font-weight:700; font-size:0.9rem; box-shadow:0 4px 0 #C94F3C; cursor:pointer;
+  }
+  .ctrl-btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #C94F3C; }
+  .ctrl-btn.secondary{ background:#B7B3A6; box-shadow:0 4px 0 #8C8879; }
+  .ctrl-btn.ghost{ background:transparent; color:#8a7e63; box-shadow:none; text-decoration:underline; font-weight:600; }
+
+  .celebrate{
+    position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+    z-index:10; background: rgba(255,255,255,0.4); backdrop-filter: blur(2px);
+  }
+  .celebrate.show{ display:flex; }
+  .celebrate-box{
+    background:white; border-radius:28px; padding:34px 28px; text-align:center;
+    box-shadow:0 20px 40px rgba(0,0,0,0.2); animation: pop .35s ease; max-width:340px;
+  }
+  .celebrate-emoji{ font-size:3.6rem; }
+  .celebrate-text{ font-family:'Baloo 2'; font-size:1.3rem; color:var(--leaf-dark); margin:8px 0 16px; }
+
+  .confetti{ position:fixed; top:-20px; width:12px; height:12px; z-index:11; animation: fall linear forwards; }
+  @keyframes fall{ to{ transform: translateY(110vh) rotate(360deg); opacity:0.3; } }
+
+  footer{ text-align:center; font-size:0.78rem; color:#7a6d55; margin-top:26px; z-index:1; position:relative; padding:0 20px;}
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="sun-deco"></div>
+<div class="ground"></div>
+
+<header>
+  <h1>🌻 Gia Huy Học Đánh Vần 🌻</h1>
+  <div class="sub">Học ghép âm thật vui nhé!</div>
+</header>
+
+<main>
+  <div class="stars-row" id="starsRow"></div>
+
+  <div class="steps">
+    <div class="step-pill" id="stepLearnPill">1. Học</div>
+    <div class="step-pill" id="stepPlayPill">2. Ghép chữ</div>
+  </div>
+
+  <div class="card screen" id="learnScreen">
+    <div class="picture" id="learnPicture">🐱</div>
+    <div class="hint" id="learnHint">Chạm vào từng mảnh để nghe âm nhé</div>
+
+    <div class="parts-row" id="partsRow"></div>
+    <div class="merge-result" id="mergeResult"></div>
+
+    <div>
+      <button class="big-btn btn-listen" id="playPartsBtn">🔊 Nghe ghép lại</button>
+      <button class="big-btn btn-go" id="goPlayBtn">Bắt đầu ghép chữ →</button>
+    </div>
+  </div>
+
+  <div class="card screen" id="playScreen">
+    <div class="picture" id="playPicture">🐱</div>
+    <button class="listen-btn" id="listenBtn">🔊 Nghe từ này</button>
+
+    <div class="slots" id="slots"></div>
+    <div class="letters" id="letters"></div>
+
+    <div class="controls">
+      <button class="ctrl-btn secondary" id="resetBtn">↺ Làm lại</button>
+      <button class="ctrl-btn ghost" id="backToLearnBtn">← Xem lại cách học</button>
+    </div>
+  </div>
+</main>
+
+<footer>Mẹo cho phụ huynh: hãy đọc to cùng bé mỗi âm trước khi bé tự ghép 💛</footer>
+
+<div class="celebrate" id="celebrate">
+  <div class="celebrate-box">
+    <div class="celebrate-emoji">🎉</div>
+    <div class="celebrate-text" id="celebrateText">Giỏi quá!</div>
+    <button class="ctrl-btn" id="nextBtn">Từ tiếp theo →</button>
+  </div>
+</div>
+
+<script>
+// Mỗi từ tách thành 2 phần đúng cách đánh vần tiếng Việt:
+// "âm đầu" (phụ âm, đọc kèm âm "ờ") + "vần" (phần còn lại mang thanh điệu)
+const WORDS = [
+  { emoji: "🐟", word: "CÁ",   parts: [ {text:"C",  sound:"cờ"},  {text:"Á",   sound:"á"}   ] },
+  { emoji: "🐔", word: "GÀ",   parts: [ {text:"G",  sound:"gờ"},  {text:"À",   sound:"à"}   ] },
+  { emoji: "🐶", word: "CHÓ",  parts: [ {text:"CH", sound:"chờ"}, {text:"Ó",   sound:"ó"}   ] },
+  { emoji: "🐱", word: "MÈO",  parts: [ {text:"M",  sound:"mờ"},  {text:"ÈO",  sound:"èo"}  ] },
+  { emoji: "🌸", word: "HOA",  parts: [ {text:"H",  sound:"hờ"},  {text:"OA",  sound:"oa"}  ] },
+  { emoji: "🚗", word: "XE",   parts: [ {text:"X",  sound:"xờ"},  {text:"E",   sound:"e"}   ] },
+  { emoji: "🏠", word: "NHÀ",  parts: [ {text:"NH", sound:"nhờ"}, {text:"À",   sound:"à"}   ] },
+  { emoji: "⚽", word: "BÓNG", parts: [ {text:"B",  sound:"bờ"},  {text:"ÓNG", sound:"óng"} ] },
+  { emoji: "⭐", word: "SAO",  parts: [ {text:"S",  sound:"sờ"},  {text:"AO",  sound:"ao"}  ] },
+  { emoji: "🦆", word: "VỊT",  parts: [ {text:"V",  sound:"vờ"},  {text:"ỊT",  sound:"ịt"}  ] },
+  { emoji: "🦀", word: "CUA",  parts: [ {text:"C",  sound:"cờ"},  {text:"UA",  sound:"ua"}  ] },
+  { emoji: "🐘", word: "VOI",  parts: [ {text:"V",  sound:"vờ"},  {text:"OI",  sound:"oi"}  ] },
+  { emoji: "🐐", word: "DÊ",   parts: [ {text:"D",  sound:"dờ"},  {text:"Ê",   sound:"ê"}   ] },
+  { emoji: "🍃", word: "LÁ",   parts: [ {text:"L",  sound:"lờ"},  {text:"Á",   sound:"á"}   ] },
+  { emoji: "🍤", word: "TÔM",  parts: [ {text:"T",  sound:"tờ"},  {text:"ÔM",  sound:"ôm"}  ] },
+  { emoji: "🐒", word: "KHỈ",  parts: [ {text:"KH", sound:"khờ"}, {text:"Ỉ",   sound:"ỉ"}   ] },
+  { emoji: "🐰", word: "THỎ",  parts: [ {text:"TH", sound:"thờ"}, {text:"Ỏ",   sound:"ỏ"}   ] },
+  { emoji: "🐃", word: "TRÂU", parts: [ {text:"TR", sound:"trờ"}, {text:"ÂU",  sound:"âu"}  ] },
+  { emoji: "🍜", word: "PHỞ",  parts: [ {text:"PH", sound:"phờ"}, {text:"Ở",   sound:"ở"}   ] },
+  { emoji: "🐢", word: "RÙA",  parts: [ {text:"R",  sound:"rờ"},  {text:"ÙA",  sound:"ùa"}  ] },
+  { emoji: "☂️", word: "DÙ",   parts: [ {text:"D",  sound:"dờ"},  {text:"Ù",   sound:"ù"}   ] },
+  { emoji: "💡", word: "ĐÈN",  parts: [ {text:"Đ",  sound:"đờ"},  {text:"ÈN",  sound:"èn"}  ] },
+];
+
+let order = shuffle([...Array(WORDS.length).keys()]);
+let currentIndex = 0;
+let starsEarned = 0;
+let phase = 'learn';
+
+let answer = [];
+let tilesState = [];
+
+const starsRow = document.getElementById('starsRow');
+const stepLearnPill = document.getElementById('stepLearnPill');
+const stepPlayPill = document.getElementById('stepPlayPill');
+const learnScreen = document.getElementById('learnScreen');
+const playScreen = document.getElementById('playScreen');
+const partsRow = document.getElementById('partsRow');
+const mergeResult = document.getElementById('mergeResult');
+const learnPicture = document.getElementById('learnPicture');
+const playPicture = document.getElementById('playPicture');
+const slotsEl = document.getElementById('slots');
+const lettersEl = document.getElementById('letters');
+const celebrateEl = document.getElementById('celebrate');
+const celebrateText = document.getElementById('celebrateText');
+
+function shuffle(arr){
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function speak(text, rate){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'vi-VN';
+  u.rate = rate || 0.85;
+  u.pitch = 1.05;
+  const voices = window.speechSynthesis.getVoices();
+  const viVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('vi'));
+  if(viVoice) u.voice = viVoice;
+  window.speechSynthesis.speak(u);
+}
+
+function playChime(success){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = success ? [523.25, 659.25, 783.99] : [300, 220];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.15, ctx.currentTime + i*0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.12 + 0.3);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + i*0.12);
+      osc.stop(ctx.currentTime + i*0.12 + 0.3);
+    });
+  }catch(e){}
+}
+
+function renderStars(){
+  starsRow.innerHTML = '';
+  for(let i = 0; i < WORDS.length; i++){
+    const s = document.createElement('span');
+    s.className = 'star' + (i < starsEarned ? ' filled' : '');
+    s.textContent = '⭐';
+    starsRow.appendChild(s);
+  }
+}
+
+function currentData(){ return WORDS[order[currentIndex]]; }
+
+function setPhase(p){
+  phase = p;
+  learnScreen.classList.toggle('active', p === 'learn');
+  playScreen.classList.toggle('active', p === 'play');
+  stepLearnPill.classList.toggle('active', p === 'learn');
+  stepPlayPill.classList.toggle('active', p === 'play');
+  stepLearnPill.classList.toggle('done', p === 'play');
+}
+
+function loadLearnScreen(){
+  const data = currentData();
+  learnPicture.textContent = data.emoji;
+  mergeResult.style.display = 'none';
+  mergeResult.textContent = '';
+  partsRow.classList.remove('merging');
+  partsRow.style.opacity = 1;
+
+  partsRow.innerHTML = '';
+  data.parts.forEach((part, i) => {
+    if(i > 0){
+      const plus = document.createElement('div');
+      plus.className = 'plus-sign';
+      plus.textContent = '+';
+      partsRow.appendChild(plus);
+    }
+    const wrap = document.createElement('div');
+    wrap.className = 'part-wrap';
+    const tile = document.createElement('button');
+    tile.className = 'part-tile';
+    tile.textContent = part.text;
+    tile.addEventListener('click', () => speak(part.sound));
+    const cap = document.createElement('div');
+    cap.className = 'part-caption';
+    cap.textContent = i === 0 ? 'âm đầu' : 'vần';
+    wrap.appendChild(tile);
+    wrap.appendChild(cap);
+    partsRow.appendChild(wrap);
+  });
+}
+
+function playPartsSequence(){
+  const data = currentData();
+  const btn = document.getElementById('playPartsBtn');
+  btn.disabled = true;
+  partsRow.style.display = 'flex';
+  mergeResult.style.display = 'none';
+  partsRow.classList.remove('merging');
+  partsRow.style.opacity = 1;
+
+  const p1 = data.parts[0], p2 = data.parts[1];
+  speak(p1.sound);
+  setTimeout(() => {
+    speak(p2.sound);
+    setTimeout(() => {
+      partsRow.classList.add('merging');
+      setTimeout(() => {
+        mergeResult.textContent = data.word;
+        mergeResult.style.display = 'block';
+        speak(data.word);
+        setTimeout(() => { btn.disabled = false; }, 900);
+      }, 500);
+    }, 900);
+  }, 900);
+}
+
+document.getElementById('playPartsBtn').addEventListener('click', playPartsSequence);
+
+document.getElementById('goPlayBtn').addEventListener('click', () => {
+  loadPlayScreen();
+  setPhase('play');
+});
+
+document.getElementById('backToLearnBtn').addEventListener('click', () => {
+  loadLearnScreen();
+  setPhase('learn');
+});
+
+function loadPlayScreen(){
+  const data = currentData();
+  playPicture.textContent = data.emoji;
+  const correctParts = data.parts.map(p => p.text);
+  answer = new Array(correctParts.length).fill(null);
+
+  slotsEl.innerHTML = '';
+  correctParts.forEach((_, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'slot';
+    slot.dataset.index = i;
+    slotsEl.appendChild(slot);
+  });
+
+  const allOtherParts = [];
+  WORDS.forEach((w, idx) => {
+    if(idx === order[currentIndex]) return;
+    w.parts.forEach(p => {
+      if(!correctParts.includes(p.text)) allOtherParts.push(p.text);
+    });
+  });
+  shuffle(allOtherParts);
+  const distractors = [...new Set(allOtherParts)].slice(0, 2);
+
+  let pool = [...correctParts, ...distractors];
+  pool = shuffle(pool);
+
+  lettersEl.innerHTML = '';
+  tilesState = pool.map((text, idx) => ({ text, used: false, id: idx }));
+  tilesState.forEach(tile => {
+    const btn = document.createElement('button');
+    btn.className = 'tile';
+    btn.textContent = tile.text;
+    btn.dataset.id = tile.id;
+    btn.addEventListener('click', () => onTileClick(tile.id));
+    lettersEl.appendChild(btn);
+  });
+
+  setTimeout(() => speak(data.word), 400);
+}
+
+function onTileClick(tileId){
+  const tile = tilesState.find(t => t.id === tileId);
+  if(!tile || tile.used) return;
+
+  const nextEmptyIndex = answer.findIndex(a => a === null);
+  if(nextEmptyIndex === -1) return;
+
+  answer[nextEmptyIndex] = tile.text;
+  tile.used = true;
+
+  const btn = lettersEl.querySelector(`[data-id="${tileId}"]`);
+  btn.classList.add('used');
+
+  const slot = slotsEl.children[nextEmptyIndex];
+  slot.textContent = tile.text;
+  slot.classList.add('filled');
+
+  if(answer.every(a => a !== null)){
+    setTimeout(checkAnswer, 300);
+  }
+}
+
+function checkAnswer(){
+  const data = currentData();
+  const built = answer.join('');
+  const correct = data.parts.map(p => p.text).join('');
+  if(built === correct){
+    starsEarned = Math.min(starsEarned + 1, WORDS.length);
+    renderStars();
+    playChime(true);
+    speak("Giỏi quá! " + data.word);
+    celebrateText.textContent = "Giỏi quá! Con ghép đúng từ " + data.word;
+    celebrateEl.classList.add('show');
+    launchConfetti();
+  } else {
+    playChime(false);
+    Array.from(slotsEl.children).forEach(s => s.classList.add('wrong'));
+    setTimeout(() => {
+      Array.from(slotsEl.children).forEach(s => {
+        s.classList.remove('wrong', 'f  }
 
   /* Ground */
   .ground{
