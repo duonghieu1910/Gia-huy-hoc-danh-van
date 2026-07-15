@@ -51,16 +51,35 @@
 
   header{ text-align:center; padding:24px 20px 6px; z-index:1; position:relative; }
   h1{
-    font-family:'Baloo 2', cursive; font-size:1.7rem; margin:0;
+    font-family:'Baloo 2', cursive; font-size:1.6rem; margin:0;
     color:var(--leaf-dark); text-shadow: 2px 2px 0 rgba(255,255,255,0.6);
   }
   .sub{ font-size:0.95rem; color:#6b5d45; margin-top:4px; font-weight:600; }
 
+  .settings-btn{
+    position:fixed; top:20px; left:16px; z-index:2;
+    background:white; border:none; border-radius:50px; padding:9px 14px;
+    font-family:'Quicksand'; font-weight:700; font-size:0.85rem; color:#6b5d45;
+    box-shadow:0 3px 0 rgba(0,0,0,0.12), 0 3px 10px rgba(0,0,0,0.1); cursor:pointer;
+  }
+  .settings-btn:active{ transform:translateY(2px); }
+
   main{ width:100%; max-width:520px; z-index:1; padding:0 16px; position:relative; }
 
-  .stars-row{ display:flex; justify-content:center; gap:5px; margin:8px 0 14px; flex-wrap:wrap; }
+  .stars-row{ display:flex; justify-content:center; gap:5px; margin:8px 0 10px; flex-wrap:wrap; }
   .star{ font-size:1.2rem; opacity:0.35; transition: all .3s ease; }
   .star.filled{ opacity:1; transform:scale(1.15); filter: drop-shadow(0 0 4px rgba(255,201,60,0.8)); }
+
+  .qty-row{ display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+  .qty-label{ font-size:0.8rem; color:#8a7e63; font-weight:700; margin-right:2px; }
+  .qty-pill{
+    padding:5px 13px; border-radius:50px; font-weight:700; font-size:0.8rem;
+    background:#F2ECDA; color:#9a8f74; border:2px solid transparent; cursor:pointer;
+  }
+  .qty-pill.active{
+    background: var(--sun); color:#6b3f00; border-color:var(--sun-dark);
+    box-shadow:0 2px 0 var(--sun-dark);
+  }
 
   .steps{ display:flex; justify-content:center; gap:8px; margin-bottom:16px; }
   .step-pill{
@@ -168,11 +187,12 @@
   .ctrl-btn.secondary{ background:#B7B3A6; box-shadow:0 4px 0 #8C8879; }
   .ctrl-btn.ghost{ background:transparent; color:#8a7e63; box-shadow:none; text-decoration:underline; font-weight:600; }
 
-  .celebrate{
+  .celebrate, .modal-overlay{
     position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-    z-index:10; background: rgba(255,255,255,0.4); backdrop-filter: blur(2px);
+    z-index:20; background: rgba(58,50,38,0.45); backdrop-filter: blur(2px);
+    padding:20px;
   }
-  .celebrate.show{ display:flex; }
+  .celebrate.show, .modal-overlay.show{ display:flex; }
   .celebrate-box{
     background:white; border-radius:28px; padding:34px 28px; text-align:center;
     box-shadow:0 20px 40px rgba(0,0,0,0.2); animation: pop .35s ease; max-width:340px;
@@ -185,6 +205,41 @@
 
   footer{ text-align:center; font-size:0.78rem; color:#7a6d55; margin-top:26px; z-index:1; position:relative; padding:0 20px;}
 
+  .modal-box{
+    background:white; border-radius:24px; padding:22px 20px; max-width:420px; width:100%;
+    max-height:85vh; overflow-y:auto; box-shadow:0 20px 40px rgba(0,0,0,0.25);
+    animation: pop .3s ease; text-align:left;
+  }
+  .modal-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .modal-header h2{ font-family:'Baloo 2'; font-size:1.3rem; color:var(--leaf-dark); margin:0; }
+  .modal-close{
+    background:#EFE9D8; border:none; border-radius:50%; width:32px; height:32px;
+    font-size:1rem; cursor:pointer; color:#6b5d45; font-weight:700;
+  }
+  .modal-hint{ font-size:0.82rem; color:#8a7e63; margin-bottom:16px; line-height:1.4; }
+  .form-row{ margin-bottom:12px; }
+  .form-row label{ display:block; font-size:0.8rem; font-weight:700; color:#6b5d45; margin-bottom:4px; }
+  .form-row input{
+    width:100%; padding:11px 12px; border-radius:12px; border:2px solid #E5DEC8;
+    font-family:'Quicksand'; font-size:1rem; font-weight:600; color:var(--ink);
+    background:#FFFBF0;
+  }
+  .form-row input:focus{ outline:none; border-color:var(--purple); }
+  .form-row.two-col{ display:flex; gap:10px; }
+  .form-row.two-col > div{ flex:1; }
+  .custom-list{ margin-top:20px; border-top:2px solid #F0EAD8; padding-top:14px; }
+  .custom-list h3{ font-size:0.85rem; color:#8a7e63; margin:0 0 8px; }
+  .custom-row{
+    display:flex; justify-content:space-between; align-items:center;
+    background:#FFFBF0; border-radius:12px; padding:9px 12px; margin-bottom:6px;
+    font-weight:700; font-size:0.95rem;
+  }
+  .del-btn{
+    background:#FFE1DC; color:var(--coral); border:none; border-radius:50%;
+    width:26px; height:26px; font-weight:700; cursor:pointer; font-size:0.85rem;
+  }
+  .empty-hint{ font-size:0.85rem; color:#b3a988; font-style:italic; }
+
   @media (prefers-reduced-motion: reduce){ *{ animation:none !important; } }
 </style>
 </head>
@@ -193,6 +248,8 @@
 <div class="sun-deco"></div>
 <div class="ground"></div>
 
+<button class="settings-btn" id="settingsBtn">⚙️ Thêm từ</button>
+
 <header>
   <h1>🌻 Gia Huy Học Đánh Vần 🌻</h1>
   <div class="sub">Học ghép âm thật vui nhé!</div>
@@ -200,6 +257,14 @@
 
 <main>
   <div class="stars-row" id="starsRow"></div>
+
+  <div class="qty-row" id="qtyRow">
+    <span class="qty-label">Số từ mỗi lượt:</span>
+    <button class="qty-pill" data-qty="5">5</button>
+    <button class="qty-pill" data-qty="10">10</button>
+    <button class="qty-pill" data-qty="15">15</button>
+    <button class="qty-pill" data-qty="all">Tất cả</button>
+  </div>
 
   <div class="steps">
     <div class="step-pill" id="stepLearnPill">1. Học</div>
@@ -243,10 +308,58 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>➕ Thêm từ mới</h2>
+      <button class="modal-close" id="closeSettingsBtn">✕</button>
+    </div>
+    <div class="modal-hint">
+      Mỗi từ tách thành 2 phần: <b>âm đầu</b> (phụ âm, đọc thêm dấu "ờ", VD B → "bờ") và <b>vần</b> (phần còn lại, VD ÓNG → "óng"). Từ mới sẽ được lưu ngay trên điện thoại/máy tính này.
+    </div>
+
+    <div class="form-row">
+      <label>Hình minh họa (emoji — bấm nút emoji trên bàn phím)</label>
+      <input type="text" id="newEmoji" placeholder="🦋">
+    </div>
+    <div class="form-row">
+      <label>Từ đầy đủ</label>
+      <input type="text" id="newWord" placeholder="BƯỚM">
+    </div>
+    <div class="form-row two-col">
+      <div>
+        <label>Âm đầu (chữ)</label>
+        <input type="text" id="newPart1Text" placeholder="B">
+      </div>
+      <div>
+        <label>Âm đầu (đọc là)</label>
+        <input type="text" id="newPart1Sound" placeholder="bờ">
+      </div>
+    </div>
+    <div class="form-row two-col">
+      <div>
+        <label>Vần (chữ)</label>
+        <input type="text" id="newPart2Text" placeholder="ƯỚM">
+      </div>
+      <div>
+        <label>Vần (đọc là)</label>
+        <input type="text" id="newPart2Sound" placeholder="ướm">
+      </div>
+    </div>
+
+    <button class="big-btn btn-go" id="addWordBtn" style="width:100%;">➕ Thêm từ này</button>
+
+    <div class="custom-list">
+      <h3>Từ đã tự thêm</h3>
+      <div id="customList"></div>
+    </div>
+  </div>
+</div>
+
 <script>
-// Mỗi từ tách thành 2 phần đúng cách đánh vần tiếng Việt:
+// Danh sách từ mặc định — mỗi từ tách theo cách đánh vần tiếng Việt:
 // "âm đầu" (phụ âm, đọc kèm âm "ờ") + "vần" (phần còn lại mang thanh điệu)
-const WORDS = [
+const BASE_WORDS = [
   { emoji: "🐟", word: "CÁ",   parts: [ {text:"C",  sound:"cờ"},  {text:"Á",   sound:"á"}   ] },
   { emoji: "🐔", word: "GÀ",   parts: [ {text:"G",  sound:"gờ"},  {text:"À",   sound:"à"}   ] },
   { emoji: "🐶", word: "CHÓ",  parts: [ {text:"CH", sound:"chờ"}, {text:"Ó",   sound:"ó"}   ] },
@@ -271,15 +384,19 @@ const WORDS = [
   { emoji: "💡", word: "ĐÈN",  parts: [ {text:"Đ",  sound:"đờ"},  {text:"ÈN",  sound:"èn"}  ] },
 ];
 
-let order = shuffle([...Array(WORDS.length).keys()]);
+const QTY_KEY = 'sessionQtyOption';
+let allWords = [];
+let order = [];
 let currentIndex = 0;
 let starsEarned = 0;
 let phase = 'learn';
+let qtyOption = loadQtyOption();
 
 let answer = [];
 let tilesState = [];
 
 const starsRow = document.getElementById('starsRow');
+const qtyRow = document.getElementById('qtyRow');
 const stepLearnPill = document.getElementById('stepLearnPill');
 const stepPlayPill = document.getElementById('stepPlayPill');
 const learnScreen = document.getElementById('learnScreen');
@@ -292,6 +409,8 @@ const slotsEl = document.getElementById('slots');
 const lettersEl = document.getElementById('letters');
 const celebrateEl = document.getElementById('celebrate');
 const celebrateText = document.getElementById('celebrateText');
+const settingsModal = document.getElementById('settingsModal');
+const customListEl = document.getElementById('customList');
 
 function shuffle(arr){
   for(let i = arr.length - 1; i > 0; i--){
@@ -299,6 +418,25 @@ function shuffle(arr){
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+}
+
+function loadQtyOption(){
+  try{ return localStorage.getItem(QTY_KEY) || '10'; }catch(e){ return '10'; }
+}
+function saveQtyOption(v){
+  try{ localStorage.setItem(QTY_KEY, v); }catch(e){}
+}
+
+function getCustomWords(){
+  try{
+    return JSON.parse(localStorage.getItem('customWords') || '[]');
+  }catch(e){ return []; }
+}
+function saveCustomWords(arr){
+  try{ localStorage.setItem('customWords', JSON.stringify(arr)); }catch(e){}
+}
+function rebuildAllWords(){
+  allWords = BASE_WORDS.concat(getCustomWords());
 }
 
 function speak(text, rate){
@@ -334,7 +472,7 @@ function playChime(success){
 
 function renderStars(){
   starsRow.innerHTML = '';
-  for(let i = 0; i < WORDS.length; i++){
+  for(let i = 0; i < order.length; i++){
     const s = document.createElement('span');
     s.className = 'star' + (i < starsEarned ? ' filled' : '');
     s.textContent = '⭐';
@@ -342,7 +480,13 @@ function renderStars(){
   }
 }
 
-function currentData(){ return WORDS[order[currentIndex]]; }
+function renderQtyRow(){
+  document.querySelectorAll('.qty-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.qty === qtyOption);
+  });
+}
+
+function currentData(){ return allWords[order[currentIndex]]; }
 
 function setPhase(p){
   phase = p;
@@ -352,6 +496,27 @@ function setPhase(p){
   stepPlayPill.classList.toggle('active', p === 'play');
   stepLearnPill.classList.toggle('done', p === 'play');
 }
+
+// Bắt đầu 1 lượt học mới dựa trên số từ đã chọn (5/10/15/Tất cả)
+function startSession(){
+  const count = qtyOption === 'all' ? allWords.length : Math.min(parseInt(qtyOption, 10), allWords.length);
+  const allIdx = shuffle([...Array(allWords.length).keys()]);
+  order = allIdx.slice(0, count);
+  currentIndex = 0;
+  starsEarned = 0;
+  renderStars();
+  renderQtyRow();
+  loadLearnScreen();
+  setPhase('learn');
+}
+
+document.querySelectorAll('.qty-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    qtyOption = btn.dataset.qty;
+    saveQtyOption(qtyOption);
+    startSession();
+  });
+});
 
 function loadLearnScreen(){
   const data = currentData();
@@ -436,7 +601,7 @@ function loadPlayScreen(){
   });
 
   const allOtherParts = [];
-  WORDS.forEach((w, idx) => {
+  allWords.forEach((w, idx) => {
     if(idx === order[currentIndex]) return;
     w.parts.forEach(p => {
       if(!correctParts.includes(p.text)) allOtherParts.push(p.text);
@@ -489,7 +654,7 @@ function checkAnswer(){
   const built = answer.join('');
   const correct = data.parts.map(p => p.text).join('');
   if(built === correct){
-    starsEarned = Math.min(starsEarned + 1, WORDS.length);
+    starsEarned = Math.min(starsEarned + 1, order.length);
     renderStars();
     playChime(true);
     speak("Giỏi quá! " + data.word);
@@ -551,9 +716,86 @@ document.getElementById('nextBtn').addEventListener('click', () => {
 stepLearnPill.addEventListener('click', () => { loadLearnScreen(); setPhase('learn'); });
 stepPlayPill.addEventListener('click', () => { loadPlayScreen(); setPhase('play'); });
 
-renderStars();
-loadLearnScreen();
-setPhase('learn');
+// ---------- SETTINGS: add / remove custom words ----------
+function openSettings(){
+  renderCustomList();
+  settingsModal.classList.add('show');
+}
+function closeSettings(){
+  settingsModal.classList.remove('show');
+}
+document.getElementById('settingsBtn').addEventListener('click', openSettings);
+document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
+settingsModal.addEventListener('click', (e) => { if(e.target === settingsModal) closeSettings(); });
+
+function renderCustomList(){
+  const custom = getCustomWords();
+  customListEl.innerHTML = '';
+  if(custom.length === 0){
+    customListEl.innerHTML = '<div class="empty-hint">Chưa có từ tự thêm nào</div>';
+    return;
+  }
+  custom.forEach((w, idx) => {
+    const row = document.createElement('div');
+    row.className = 'custom-row';
+    const label = document.createElement('span');
+    label.textContent = w.emoji + ' ' + w.word;
+    const delBtn = document.createElement('button');
+    delBtn.className = 'del-btn';
+    delBtn.textContent = '✕';
+    delBtn.addEventListener('click', () => deleteCustomWord(idx));
+    row.appendChild(label);
+    row.appendChild(delBtn);
+    customListEl.appendChild(row);
+  });
+}
+
+function deleteCustomWord(idx){
+  const custom = getCustomWords();
+  custom.splice(idx, 1);
+  saveCustomWords(custom);
+  rebuildAllWords();
+  startSession();
+  renderCustomList();
+}
+
+document.getElementById('addWordBtn').addEventListener('click', () => {
+  const emojiField = document.getElementById('newEmoji').value.trim();
+  const emoji = emojiField || '🔤';
+  const word = document.getElementById('newWord').value.trim().toUpperCase();
+  const p1t = document.getElementById('newPart1Text').value.trim().toUpperCase();
+  const p1s = document.getElementById('newPart1Sound').value.trim();
+  const p2t = document.getElementById('newPart2Text').value.trim().toUpperCase();
+  const p2s = document.getElementById('newPart2Sound').value.trim();
+
+  if(!word || !p1t || !p1s || !p2t || !p2s){
+    alert('Vui lòng điền đầy đủ: Từ đầy đủ, Âm đầu (chữ + đọc là), Vần (chữ + đọc là) nhé!');
+    return;
+  }
+
+  const custom = getCustomWords();
+  custom.push({ emoji, word, parts: [ {text:p1t, sound:p1s}, {text:p2t, sound:p2s} ] });
+  saveCustomWords(custom);
+  rebuildAllWords();
+
+  ['newEmoji','newWord','newPart1Text','newPart1Sound','newPart2Text','newPart2Sound'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  renderCustomList();
+
+  // Đưa từ mới vào phiên học hiện tại và nhảy thẳng đến đó để xem lại ngay
+  const newIdx = allWords.length - 1;
+  if(!order.includes(newIdx)) order.push(newIdx);
+  currentIndex = order.indexOf(newIdx);
+  renderStars();
+  closeSettings();
+  loadLearnScreen();
+  setPhase('learn');
+});
+
+// ---------- Kick things off ----------
+rebuildAllWords();
+startSession();
 
 if('speechSynthesis' in window){
   window.speechSynthesis.onvoiceschanged = () => {};
